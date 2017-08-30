@@ -1,11 +1,14 @@
 package com.bwie.zhangxiao0830;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.bwie.zhangxiao0830.adapter.MyListAdapter;
 import com.bwie.zhangxiao0830.bean.Bean;
+import com.bwie.zhangxiao0830.fragment.LeftFragment;
+import com.bwie.zhangxiao0830.fragment.RightFragment;
 import com.google.gson.Gson;
+import com.kson.slidingmenu.SlidingMenu;
+import com.kson.slidingmenu.app.SlidingFragmentActivity;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -18,7 +21,7 @@ import java.util.List;
 import view.xlistview.XListView;
 
 @ContentView(R.layout.activity_main)
-public class MainActivity extends AppCompatActivity implements XListView.IXListViewListener {
+public class MainActivity extends SlidingFragmentActivity implements XListView.IXListViewListener {
 
     private String url = "http://v.juhe.cn/toutiao/index?type=&key=22a108244dbb8d1f49967cd74a0c144d";
 
@@ -28,9 +31,11 @@ public class MainActivity extends AppCompatActivity implements XListView.IXListV
     private MyListAdapter adapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
      // setContentView(R.layout.activity_main);
+
+        initMenu();
 
         x.view().inject(this);
         RequestParams params = new RequestParams(url);
@@ -72,6 +77,22 @@ public class MainActivity extends AppCompatActivity implements XListView.IXListV
         });
 
 
+    }
+
+    private void initMenu() {
+        //添加左菜单
+        setBehindContentView(R.layout.left_menu);
+        getSupportFragmentManager().beginTransaction().replace(R.id.left_menu,new LeftFragment()).commit();
+
+        //设置slidingmenu相关属性
+        SlidingMenu menu = getSlidingMenu();
+        menu.setMode(SlidingMenu.LEFT_RIGHT);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        menu.setBehindOffsetRes(R.dimen.BehindOffsetRes);  // 设置滑动菜单视图的宽度
+
+        //设置右菜单
+        menu.setSecondaryMenu(R.layout.right_menu);
+        getSupportFragmentManager().beginTransaction().replace(R.id.right_menu,new RightFragment()).commit();
     }
 
     @Override
